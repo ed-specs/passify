@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import SignInInputField from "./SignInInputField";
+import SignInInputField from "../input-fields/SignInInputField";
 import LoginButton from "../buttons/LoginButton";
 
 export default function LoginForm({ onAuthSuccess, onAuthError }) {

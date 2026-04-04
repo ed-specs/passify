@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function LoginButton({ isLoading }) {
+export default function CreateAccountButton({ isLoading }) {
   return (
     <div className="flex flex-col gap-2 mt-2">
       <button
@@ -13,15 +13,15 @@ export default function LoginButton({ isLoading }) {
           {isLoading && (
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
           )}
-          {isLoading ? "Authenticating..." : "Sign In"}
+          {isLoading ? "Creating account..." : "Create Account"}
         </div>
       </button>
 
       <Link
-        href="/create-account"
+        href="/"
         className="w-full text-center px-4 py-2 rounded-lg text-gray-900 cursor-pointer transition-colors duration-150 hover:bg-gray-200"
       >
-        Create an account
+        Go back to sign in
       </Link>
     </div>
   );

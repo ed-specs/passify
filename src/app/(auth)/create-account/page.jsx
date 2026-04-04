@@ -1,14 +1,13 @@
 "use client";
-
-import LoginForm from "@/components/forms/LoginForm";
 import ToasterMessage from "@/components/toaster/ToasterMessage";
+import CreateAccountForm from "@/components/forms/CreateAccountForm";
 import { useState } from "react";
 
-export default function SignInPage() {
+export default function CreateAccountPage() {
   const [showToaster, setShowToaster] = useState(false);
   const [toasterData, setToasterData] = useState({
     type: "success",
-    message: "Login successful!",
+    message: "Account created successfully!",
   });
 
   const displayToaster = (type, message) => {
@@ -27,21 +26,24 @@ export default function SignInPage() {
               Welcome to Passify
             </h1>
             <span className="text-gray-500 text-sm md:text-base">
-              Sign in to your account
+              Create your account
             </span>
           </div>
         </div>
-        {/* form */}
-        <LoginForm
-          onAuthSuccess={(msg) => displayToaster("success", msg)}
-          onAuthError={(msg) => displayToaster("error", msg)}
-        />
-      </div>
 
-      {/* toaster message here */}
-      {showToaster && (
-        <ToasterMessage type={toasterData.type} message={toasterData.message} />
-      )}
+        {/* form */}
+        <CreateAccountForm
+          onCreateAccountSuccess={(msg) => displayToaster("success", msg)}
+          onCreateAccountError={(msg) => displayToaster("error", msg)}
+        />
+
+        {showToaster && (
+          <ToasterMessage
+            type={toasterData.type}
+            message={toasterData.message}
+          />
+        )}
+      </div>
     </div>
   );
 }

@@ -32,15 +32,15 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }) {
 
       {/* 2. THE SIDEBAR PANEL */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-gray-900 p-5 text-white shadow-2xl 
+        className={`fixed inset-y-0 left-0 z-50 w-80 bg-gray-900 p-5 text-white shadow-2xl 
         transition-transform duration-300 ease-in-out lg:hidden
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
-        <div className="flex flex-col justify-between h-full">
+        <div className="flex flex-col justify-between h-full ">
           {/* Close Button */}
           <button
             onClick={toggleSidebar}
-            className="absolute top-4 right-4 p-2 text-gray-500 hover:text-white transition-colors"
+            className="absolute top-4 right-4 p-2.5 text-gray-500 hover:text-white transition-colors"
           >
             <X className="size-6" />
           </button>
@@ -61,7 +61,7 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }) {
                     key={item.href}
                     href={item.href}
                     onClick={toggleSidebar} // Close sidebar when navigating
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
+                    className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200
                     ${
                       isActive
                         ? "bg-gray-800 text-white shadow-inner"
@@ -77,13 +77,13 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }) {
           </div>
 
           {/* Bottom Section */}
-          <div className="pt-4 border-t border-gray-800">
+          <div className="pt-2 border-t border-gray-800">
             <Link
               href="/"
-              className="flex w-full items-center gap-3 px-4 py-3 rounded-lg text-red-400 transition-all hover:bg-red-500/10 hover:text-red-500"
+              className="flex w-full items-center gap-3 px-4 py-2.5 rounded-lg text-red-400 transition-all hover:bg-red-500/10 hover:text-red-500"
             >
               <X className="size-5" />
-              <span className="font-medium">Logout</span>
+              <span className="font-medium">Sign out</span>
             </Link>
           </div>
         </div>

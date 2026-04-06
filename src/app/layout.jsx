@@ -9,7 +9,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${inter.className} antialiased`}>
+    <html
+      lang="en"
+      className={`${inter.className} antialiased text-sm sm:text-base bg-gray-`}
+    >
       <body className="">{children}</body>
     </html>
   );

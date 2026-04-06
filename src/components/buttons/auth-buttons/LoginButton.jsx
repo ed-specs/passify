@@ -6,8 +6,8 @@ export default function LoginButton({ isLoading }) {
       <button
         type="submit"
         disabled={isLoading}
-        className={`px-4 py-2 rounded-lg  text-white cursor-pointer transition-colors duration-150
-            ${isLoading ? "bg-gray-700 cursor-not-allowed" : "bg-gray-900 hover:bg-gray-800"}`}
+        className={`px-4 py-2.5 rounded-lg text-sm  text-white cursor-pointer transition-colors duration-150
+            ${isLoading ? "bg-gray-700 cursor-not-allowed" : "bg-gray-800 hover:bg-gray-900"}`}
       >
         <div className="flex items-center justify-center gap-2">
           {isLoading && (
@@ -19,7 +19,7 @@ export default function LoginButton({ isLoading }) {
 
       <Link
         href="/create-account"
-        className="w-full text-center px-4 py-2 rounded-lg text-gray-900 cursor-pointer transition-colors duration-150 hover:bg-gray-200"
+        className="w-full text-center px-4 py-2.5 rounded-lg text-sm text-gray-900 cursor-pointer transition-colors duration-150 hover:bg-gray-200"
       >
         Create an account
       </Link>

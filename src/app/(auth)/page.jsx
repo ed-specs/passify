@@ -1,6 +1,6 @@
 "use client";
 
-import LoginForm from "@/components/forms/LoginForm";
+import LoginForm from "@/components/forms/auth-forms/LoginForm";
 import ToasterMessage from "@/components/toaster/ToasterMessage";
 import { useState } from "react";
 
@@ -23,12 +23,8 @@ export default function SignInPage() {
         <div className="flex flex-col gap-3">
           {/* Logo here */}
           <div className="flex flex-col items-center justify-center gap-1">
-            <h1 className="text-xl md:text-2xl font-bold">
-              Welcome to Passify
-            </h1>
-            <span className="text-gray-500 text-sm md:text-base">
-              Sign in to your account
-            </span>
+            <h1 className="text-2xl  font-bold">Welcome to Passify</h1>
+            <span className="text-gray-500">Sign in to your account</span>
           </div>
         </div>
         {/* form */}

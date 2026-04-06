@@ -20,7 +20,7 @@ export default function Navbar() {
           <Link
             key={item.href}
             href={item.href}
-            className={`px-4 py-2 rounded-md transition-colors duration-150 text-sm ${
+            className={`px-4 py-2.5 rounded-lg transition-colors duration-150 text-sm ${
               isActive
                 ? "bg-gray-800 hover:bg-gray-900 text-white"
                 : "hover:bg-gray-100"

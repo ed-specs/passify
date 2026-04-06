@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import CreateAccountInputField from "../input-fields/CreateAccountInputField";
-import CreateAccountButton from "../buttons/CreateAccountButton";
+import CreateAccountInputField from "../../input-fields/auth-input-fields/CreateAccountInputField";
+import CreateAccountButton from "../../buttons/auth-buttons/CreateAccountButton";
 
 export default function CreateAccountForm({
   onCreateAccountSuccess,
@@ -10,12 +10,14 @@ export default function CreateAccountForm({
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setIsLoading(false);
+    setIsLoading(true);
     setError(false);
 
     try {
@@ -52,18 +54,22 @@ export default function CreateAccountForm({
             label="First Name"
             type="text"
             name="firstName"
+            value={firstName}
             placeholder="Enter your first name"
             isLoading={isLoading}
             error={error}
+            onChange={(e) => setFirstName(e.target.value)}
           />
           {/* last name */}
           <CreateAccountInputField
             label="Last Name"
             type="text"
             name="lastName"
+            value={lastName}
             placeholder="Enter your last name"
             isLoading={isLoading}
             error={error}
+            onChange={(e) => setLastName(e.target.value)}
           />
         </div>
         {/* email */}
@@ -74,6 +80,8 @@ export default function CreateAccountForm({
           placeholder="Enter your email"
           isLoading={isLoading}
           error={error}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         {/* password */}
         <CreateAccountInputField
@@ -83,6 +91,8 @@ export default function CreateAccountForm({
           placeholder="Enter your password"
           isLoading={isLoading}
           error={error}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
         {/* confirm password */}
         <CreateAccountInputField
@@ -92,6 +102,8 @@ export default function CreateAccountForm({
           placeholder="Confirm your password"
           isLoading={isLoading}
           error={error}
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
         />
       </div>
       <CreateAccountButton isLoading={isLoading} />

@@ -1,6 +1,6 @@
 "use client";
 import ToasterMessage from "@/components/toaster/ToasterMessage";
-import CreateAccountForm from "@/components/forms/CreateAccountForm";
+import CreateAccountForm from "@/components/forms/auth-forms/CreateAccountForm";
 import { useState } from "react";
 
 export default function CreateAccountPage() {

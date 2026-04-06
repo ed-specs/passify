@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import SignInInputField from "../input-fields/SignInInputField";
-import LoginButton from "../buttons/LoginButton";
+import SignInInputField from "../../input-fields/auth-input-fields/SignInInputField";
+import LoginButton from "../../buttons/auth-buttons/LoginButton";
 
 export default function LoginForm({ onAuthSuccess, onAuthError }) {
   const [email, setEmail] = useState("");
@@ -12,7 +12,7 @@ export default function LoginForm({ onAuthSuccess, onAuthError }) {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setIsLoading(false);
+    setIsLoading(true);
     setError(false);
 
     try {
@@ -24,7 +24,7 @@ export default function LoginForm({ onAuthSuccess, onAuthError }) {
 
       if (isSuccess) {
         // 2. CALL THE "WALKIE-TALKIE"
-        // This tells the Home page: "Hey, show the success toaster!"
+        // This tells the Home page: "Hey, show the success toaster"
         onAuthSuccess("Welcome back! Logging you in...");
       } else {
         throw new Error("Invalid credentials");
@@ -49,6 +49,8 @@ export default function LoginForm({ onAuthSuccess, onAuthError }) {
           placeholder="Enter your email"
           isLoading={isLoading}
           error={error}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         {/* password */}
         <SignInInputField
@@ -58,6 +60,8 @@ export default function LoginForm({ onAuthSuccess, onAuthError }) {
           placeholder="Enter your password"
           isLoading={isLoading}
           error={error}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
       </div>
       <LoginButton isLoading={isLoading} />

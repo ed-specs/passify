@@ -1,6 +1,5 @@
 import { Menu } from "lucide-react";
 import Navbar from "@/components/Navigation/Navbar";
-import SignOutButton from "@/components/buttons/SignOutButton";
 
 export default function Header({ toggleSidebar }) {
   return (
@@ -19,11 +18,6 @@ export default function Header({ toggleSidebar }) {
       </div>
       {/* menus */}
       <Navbar />
-
-      {/* sign out */}
-      <div className="hidden md:flex">
-        <SignOutButton />
-      </div>
     </div>
   );
 }

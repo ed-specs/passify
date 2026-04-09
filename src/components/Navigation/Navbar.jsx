@@ -8,6 +8,7 @@ const MENU_ITEMS = [
   { label: "Password Vault", href: "/password-vault" },
   { label: "Profile", href: "/profile" },
   { label: "Settings", href: "/settings" },
+  { label: "Logout", href: "/" },
 ];
 
 export default function Navbar() {
@@ -16,6 +17,9 @@ export default function Navbar() {
     <div className=" hidden md:flex items-center gap-2">
       {MENU_ITEMS.map((item) => {
         const isActive = pathname === item.href;
+
+        const isLogout = item.label.toLowerCase() === "logout";
+
         return (
           <Link
             key={item.href}
@@ -24,7 +28,7 @@ export default function Navbar() {
               isActive
                 ? "bg-gray-800 hover:bg-gray-900 text-white"
                 : "hover:bg-gray-100"
-            } `}
+            } ${isLogout ? "text-red-500 hover:bg-red-100" : ""}`}
           >
             {item.label}
           </Link>

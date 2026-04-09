@@ -77,7 +77,7 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }) {
           </div>
 
           {/* Bottom Section */}
-          <div className="pt-2 border-t border-gray-800">
+          <div className="">
             <Link
               href="/"
               className="flex w-full items-center gap-3 px-4 py-2.5 rounded-lg text-red-400 transition-all hover:bg-red-500/10 hover:text-red-500"

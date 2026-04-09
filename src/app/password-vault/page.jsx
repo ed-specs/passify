@@ -146,7 +146,9 @@ export default function PasswordVaultPage() {
           </div>
         </div>
       </div>
+
       <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+
       {selectedPassword && (
         <ViewPasswordModal
           passwordData={selectedPassword}

@@ -1,6 +1,6 @@
 export default function AddPasswordButton({ isLoading }) {
   return (
-    <div className="flex  mt-2">
+    <div className="flex mt-2">
       <button
         type="submit"
         disabled={isLoading}

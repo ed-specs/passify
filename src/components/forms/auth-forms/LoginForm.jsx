@@ -3,36 +3,52 @@
 import { useState } from "react";
 import SignInInputField from "../../input-fields/auth-input-fields/SignInInputField";
 import LoginButton from "../../buttons/auth-buttons/LoginButton";
+import { authService } from "@/services/authService";
+import { validators } from "@/lib/validators";
+import { getPublicErrorMessage } from "@/lib/errorMessages";
+import { logger } from "@/lib/logger";
+import { useRouter } from "next/navigation";
 
 export default function LoginForm({ onAuthSuccess, onAuthError }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
+  const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError(false);
 
+    // Validate inputs
+    if (validators.isEmpty(email) || validators.isEmpty(password)) {
+      onAuthError("Please fill in all fields.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!validators.isValidEmail(email)) {
+      onAuthError("Please enter a valid email address.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      // --- HERE IS WHERE YOUR SUPABASE LOGIC GOES ---
-      // For now, let's pretend it takes 2 seconds
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      logger.info("Login attempt", { email });
+      await authService.signIn({ email, password });
 
-      const isSuccess = true; // Pretend Supabase said YES
+      logger.info("Login successful", { email });
+      onAuthSuccess("Welcome back! Logging you in...");
 
-      if (isSuccess) {
-        // 2. CALL THE "WALKIE-TALKIE"
-        // This tells the Home page: "Hey, show the success toaster"
-        onAuthSuccess("Welcome back! Logging you in...");
-      } else {
-        throw new Error("Invalid credentials");
-      }
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 2000);
     } catch (err) {
       setError(true);
-      // This tells the Home page: "Hey, show the error toaster!"
-      onAuthError(err.message || "Something went wrong. Please try again.");
+      const publicMessage = getPublicErrorMessage(err);
+      logger.warn("Login failed", { email, error: err.message });
+      onAuthError(publicMessage);
     } finally {
       setIsLoading(false);
     }

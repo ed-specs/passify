@@ -8,6 +8,8 @@ export default function AddPasswordForm({
   onAddPasswordSuccess,
   onAddPasswordError,
 }) {
+  const [accountTitle, setAccountTitle] = useState("");
+  const [accountCategory, setAccountCategory] = useState("");
   const [accountName, setAccountName] = useState("");
   const [password, setPassword] = useState("");
   const [note, setNote] = useState("");
@@ -47,6 +49,28 @@ export default function AddPasswordForm({
   return (
     <form onSubmit={handleAddPassword} className="flex flex-col gap-6">
       <div className="flex flex-col gap-4">
+        {/* email */}
+        <AddNewPasswordInputField
+          label="Website / App"
+          type="text"
+          name="accountTitle"
+          placeholder="Enter website or app"
+          isLoading={isLoading}
+          error={error}
+          value={accountTitle}
+          onChange={(e) => setAccountTitle(e.target.value)}
+        />
+        {/* email */}
+        <AddNewPasswordInputField
+          label="Category"
+          type="text"
+          name="account Category"
+          placeholder="Enter your account name"
+          isLoading={isLoading}
+          error={error}
+          value={accountCategory}
+          onChange={(e) => setAccountCategory(e.target.value)}
+        />
         {/* email */}
         <AddNewPasswordInputField
           label="Account Name"

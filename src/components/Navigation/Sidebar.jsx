@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Vault,
@@ -9,6 +9,9 @@ import {
   CircleUserRound,
   X,
 } from "lucide-react";
+import { authService } from "@/services/authService";
+import ToasterMessage from "@/components/toaster/ToasterMessage";
+import { useState } from "react";
 
 const MENU_ITEMS = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -19,6 +22,33 @@ const MENU_ITEMS = [
 
 export default function Sidebar({ isSidebarOpen, toggleSidebar }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [showToaster, setShowToaster] = useState(false);
+  const [toasterData, setToasterData] = useState({
+    type: "success",
+    message: "Logging out...",
+  });
+
+  const displayToaster = (type, message) => {
+    setToasterData({ type, message });
+    setShowToaster(true);
+    setTimeout(() => {
+      setShowToaster(false);
+    }, 3000);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      displayToaster("success", "Logging out...");
+      setTimeout(() => {
+        router.push("/");
+        router.refresh();
+      }, 2000);
+    } catch (error) {
+      displayToaster("error", error?.message || "Logout failed");
+    }
+  };
 
   return (
     <>
@@ -78,16 +108,19 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }) {
 
           {/* Bottom Section */}
           <div className="">
-            <Link
-              href="/"
-              className="flex w-full items-center gap-3 px-4 py-2.5 rounded-lg text-red-400 transition-all hover:bg-red-500/10 hover:text-red-500"
+            <button
+              onClick={handleLogout}
+              className="cursor-pointer flex w-full items-center gap-3 px-4 py-2.5 rounded-lg text-red-400 transition-all hover:bg-red-500/10 hover:text-red-500 border-none bg-transparent"
             >
               <X className="size-5" />
               <span className="font-medium">Sign out</span>
-            </Link>
+            </button>
           </div>
         </div>
       </div>
+      {showToaster && (
+        <ToasterMessage type={toasterData.type} message={toasterData.message} />
+      )}
     </>
   );
 }

@@ -69,8 +69,8 @@ export default function PasswordStrengthMeter({ password = "" }) {
       </div>
 
       {/* Requirements Checklist */}
-      <div className="space-y-2">
-        <p className="text-sm font-medium">Requirements:</p>
+      <div className="space-y-2 p-4 rounded-lg border border-gray-300 bg-gray-50">
+        <p className="text-sm font-medium text-gray-500">Requirements:</p>
         <div className="space-y-1">
           {requirements.map((req, idx) => (
             <div key={idx} className="flex items-center gap-2 text-sm">
@@ -86,28 +86,6 @@ export default function PasswordStrengthMeter({ password = "" }) {
           ))}
         </div>
       </div>
-
-      {/* Suggestions */}
-      {strength < 80 && (
-        <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm text-blue-700">
-          <p className="font-medium mb-1">💡 Suggestions:</p>
-          {strength < 30 && (
-            <ul className="list-disc list-inside space-y-1">
-              <li>Use at least 12 characters</li>
-              <li>Add uppercase letters, numbers, and special characters</li>
-            </ul>
-          )}
-          {strength >= 30 && strength < 60 && (
-            <ul className="list-disc list-inside space-y-1">
-              <li>Add more special characters</li>
-              <li>Make it longer (aim for 16+ characters)</li>
-            </ul>
-          )}
-          {strength >= 60 && strength < 80 && (
-            <p>You're close! Add one or two more special characters.</p>
-          )}
-        </div>
-      )}
     </div>
   );
 }

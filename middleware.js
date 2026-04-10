@@ -54,32 +54,51 @@ export async function middleware(request) {
     },
   );
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  let session = null;
+  try {
+    const {
+      data: { session: authSession },
+      error,
+    } = await supabase.auth.getSession();
+
+    if (error) {
+      console.error("Middleware: Failed to get session:", error);
+    } else {
+      session = authSession;
+    }
+  } catch (err) {
+    console.error("Middleware: Error during session retrieval:", err);
+  }
 
   const pathname = request.nextUrl.pathname;
 
-  // Fix: Define Public Routes (only "/" and "/create-account")
-  const isPublicPage = pathname === "/" || pathname === "/create-account";
+  // Define Public Routes (only "/" and "/create-account")
+  const isPublicRoute = pathname === "/" || pathname === "/create-account";
 
-  // Fix: Define Auth Pages (pages visible only when NOT logged in)
-  const isAuthPage = pathname === "/" || pathname === "/create-account";
+  // Define Auth-Only Routes (visible only when NOT logged in)
+  const isAuthOnlyRoute = pathname === "/" || pathname === "/create-account";
 
   // Protected Routes (requires authentication)
-  const isProtectedPage =
+  const isProtectedRoute =
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/password-vault") ||
     pathname.startsWith("/profile") ||
-    pathname.startsWith("/settings");
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/api/passwords");
 
-  // Logic A: Redirect unauthenticated users away from protected pages
-  if (isProtectedPage && !session) {
+  // Rule 1: Unauthenticated users trying to access protected routes → redirect to "/"
+  if (isProtectedRoute && !session) {
+    console.log(
+      `[Middleware] Unauthenticated access to ${pathname} → redirecting to /`,
+    );
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // Logic B: Redirect authenticated users away from auth pages
-  if (isAuthPage && session) {
+  // Rule 2: Authenticated users trying to access auth-only routes → redirect to "/dashboard"
+  if (isAuthOnlyRoute && session) {
+    console.log(
+      `[Middleware] Authenticated user at ${pathname} → redirecting to /dashboard`,
+    );
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

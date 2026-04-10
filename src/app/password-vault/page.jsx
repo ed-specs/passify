@@ -1,5 +1,6 @@
 "use client";
 
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Sidebar from "@/components/Navigation/Sidebar";
 import Header from "@/components/header/Header";
 import SearchBarInputField from "@/components/input-fields/SearchBarInputField";
@@ -18,7 +19,7 @@ const MOCK_PASSWORDS = [
   { id: 3, title: "Twitter", account: "user@twitter.com" },
 ];
 
-export default function PasswordVaultPage() {
+function PasswordVaultContent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [toggleFilter, setToggleFilter] = useState(false);
   const [toggleAddPassword, setToggleAddPassword] = useState(false);
@@ -179,5 +180,13 @@ export default function PasswordVaultPage() {
         <ToasterMessage type={toasterData.type} message={toasterData.message} />
       )}
     </div>
+  );
+}
+
+export default function PasswordVaultPage() {
+  return (
+    <ProtectedRoute>
+      <PasswordVaultContent />
+    </ProtectedRoute>
   );
 }

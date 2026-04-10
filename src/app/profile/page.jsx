@@ -1,24 +1,32 @@
 "use client";
 
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Sidebar from "@/components/Navigation/Sidebar";
 import Header from "@/components/header/Header";
 import EditProfileButton from "@/components/buttons/EditProfileButton";
 import ToasterMessage from "@/components/toaster/ToasterMessage";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { useProfile } from "@/hooks/useProfile"; // Import the hook
+import { authService } from "@/services/authService";
+import { supabase } from "@/lib/supabase";
+import Loading from "@/components/loading/Loading";
 
-const initialProfile = {
-  fullName: "Edward C. Gatbonton",
-  email: "edwardgatbonton13@gmail.com",
-  profileImage: "/images/default-profile.png",
-  phone: "+63 912 345 6789",
-  address: "Poblacion 4, Victoria, Oriental Mindoro",
-};
-
-export default function ProfilePage() {
+function ProfileContent() {
+  const {
+    profile,
+    isLoadingProfile,
+    error: profileError,
+    setProfile,
+  } = useProfile();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [profileData, setProfileData] = useState(initialProfile);
-  const [formData, setFormData] = useState(initialProfile);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    address: "",
+    profileImage: "/images/default-profile.png",
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const [showToaster, setShowToaster] = useState(false);
@@ -27,6 +35,43 @@ export default function ProfilePage() {
     message: "",
   });
   const fileInputRef = useRef(null);
+
+  // Sync formData whenever the profile is fetched from the DB
+  useEffect(() => {
+    if (profile) {
+      setFormData(profile);
+    }
+  }, [profile]);
+
+  // TODO: Implement a loading screen
+  if (isLoadingProfile) return <Loading name="Profile page" />;
+
+  // Handle error state
+  if (profileError)
+    return (
+      <div className="flex items-center justify-center min-h-dvh z-50">
+        <div className="text-center">
+          <p className="text-red-600 font-medium mb-2">Error loading profile</p>
+          <p className="text-gray-600 text-sm">{profileError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+
+  // Handle no profile state
+  if (!profile)
+    return (
+      <div className="flex items-center justify-center min-h-dvh z-50">
+        <div className="text-center">
+          <p className="text-gray-600">No profile found. Please log in.</p>
+        </div>
+      </div>
+    );
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -43,7 +88,7 @@ export default function ProfilePage() {
 
   const toggleEditProfile = () => {
     if (isEditing) {
-      setFormData(profileData);
+      setFormData(profile);
       setError(false);
     }
     setIsEditing((prev) => !prev);
@@ -58,6 +103,10 @@ export default function ProfilePage() {
     if (isEditing) {
       fileInputRef.current?.click();
     }
+  };
+
+  const handleProfileImageError = (e) => {
+    e.target.src = "/images/default-profile.png";
   };
 
   const handleProfileImageChange = (e) => {
@@ -78,22 +127,31 @@ export default function ProfilePage() {
     setError(false);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      const isSuccess = true;
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-      if (isSuccess) {
-        setProfileData(formData);
-        setIsEditing(false);
-        displayToaster("success", "Profile updated successfully!");
-      } else {
-        throw new Error("Unable to update profile. Please try again.");
-      }
+      // Check if we have a new file to upload
+      const newFile = formData.profileImage.startsWith("data:")
+        ? fileInputRef.current.files[0]
+        : null;
+
+      // Call the Service
+      const { finalImageUrl } = await authService.updateProfile(user.id, {
+        fullName: formData.fullName,
+        phone: formData.phone,
+        address: formData.address,
+        profileImage: profile.profileImage, // fallback current image
+        imageFile: newFile, // actual file object
+      });
+
+      const updated = { ...formData, profileImage: finalImageUrl };
+      setProfile(updated); // Update the hook's state
+      setFormData(updated); // Also update form data
+      setIsEditing(false);
+      displayToaster("success", "Profile updated successfully!");
     } catch (err) {
-      setError(true);
-      displayToaster(
-        "error",
-        err.message || "Unable to update profile. Please try again.",
-      );
+      displayToaster("error", err?.message || "Failed to update profile");
     } finally {
       setIsLoading(false);
     }
@@ -121,10 +179,11 @@ export default function ProfilePage() {
                     src={
                       isEditing
                         ? formData.profileImage
-                        : profileData.profileImage
+                        : profile?.profileImage || "/images/default-profile.png"
                     }
                     alt="Profile"
                     className="h-full w-full object-cover"
+                    onError={handleProfileImageError}
                   />
                   {isEditing && (
                     <span className="cursor-pointer absolute inset-0 bg-black/20 flex items-center justify-center text-xs text-white opacity-0 transition hover:opacity-100">
@@ -143,10 +202,10 @@ export default function ProfilePage() {
                 {/* name and email */}
                 <div className="flex flex-col justify-center items-center min-w-0">
                   <h3 className="text-lg font-semibold text-gray-900 truncate">
-                    {profileData.fullName}
+                    {profile?.fullName}
                   </h3>
                   <p className="text-sm text-gray-500 truncate">
-                    {profileData.email}
+                    {profile?.email}
                   </p>
                 </div>
                 {/* update button */}
@@ -174,7 +233,7 @@ export default function ProfilePage() {
                       />
                     ) : (
                       <div className=" rounded-lg bg-gray-50 px-4 py-2.5 text-sm min-w-0 truncate ">
-                        {profileData.fullName}
+                        {profile?.fullName}
                       </div>
                     )}
                   </div>
@@ -186,13 +245,12 @@ export default function ProfilePage() {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        disabled={isLoading}
-                        className={` w-full rounded-lg border border-gray-300  px-4 py-2.5 text-sm min-w-0 truncate outline-none transition focus:border-gray-900
-                          ${isLoading ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+                        disabled={true}
+                        className="w-full rounded-lg border border-gray-300  px-4 py-2.5 text-sm min-w-0 truncate outline-none bg-gray-100 cursor-not-allowed"
                       />
                     ) : (
-                      <div className=" rounded-lg bg-gray-50 px-4 py-2.5 text-sm min-w-0 truncate ">
-                        {profileData.email}
+                      <div className="rounded-lg bg-gray-50 px-4 py-2.5 text-sm min-w-0 truncate">
+                        {profile?.email || "Loading..."}
                       </div>
                     )}
                   </div>
@@ -210,7 +268,7 @@ export default function ProfilePage() {
                       />
                     ) : (
                       <div className=" rounded-lg bg-gray-50 px-4 py-2.5 text-sm min-w-0 truncate ">
-                        {profileData.phone}
+                        {profile?.phone}
                       </div>
                     )}
                   </div>
@@ -228,7 +286,7 @@ export default function ProfilePage() {
                       />
                     ) : (
                       <div className=" rounded-lg bg-gray-50 px-4 py-2.5 text-sm min-w-0 truncate ">
-                        {profileData.address}
+                        {profile?.address}
                       </div>
                     )}
                   </div>
@@ -244,7 +302,7 @@ export default function ProfilePage() {
                       <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full sm:w-auto rounded-lg bg-gray-900 px-5 py-2.5 text-sm min-w-0 truncate font-medium text-white hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
+                        className="w-full cursor-pointer sm:w-auto rounded-lg bg-gray-900 px-5 py-2.5 text-sm min-w-0 truncate font-medium text-white hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {isLoading ? "Updating..." : "Update"}
                       </button>
@@ -265,5 +323,13 @@ export default function ProfilePage() {
         <ToasterMessage type={toasterData.type} message={toasterData.message} />
       )}
     </div>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <ProtectedRoute>
+      <ProfileContent />
+    </ProtectedRoute>
   );
 }

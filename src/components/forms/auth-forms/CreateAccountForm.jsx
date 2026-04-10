@@ -3,6 +3,12 @@
 import { useState } from "react";
 import CreateAccountInputField from "../../input-fields/auth-input-fields/CreateAccountInputField";
 import CreateAccountButton from "../../buttons/auth-buttons/CreateAccountButton";
+import PasswordStrengthMeter from "../../PasswordStrengthMeter";
+import { authService } from "@/services/authService";
+import { validators } from "@/lib/validators";
+import { getPublicErrorMessage } from "@/lib/errorMessages";
+import { logger } from "@/lib/logger";
+import { useRouter } from "next/navigation";
 
 export default function CreateAccountForm({
   onCreateAccountSuccess,
@@ -10,43 +16,106 @@ export default function CreateAccountForm({
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
+  const router = useRouter();
 
-  const handleLogin = async (e) => {
+  const handleCreateAccount = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError(false);
 
+    // Validate all fields are filled
+    if (
+      validators.isEmpty(email) ||
+      validators.isEmpty(password) ||
+      validators.isEmpty(confirmPassword) ||
+      validators.isEmpty(firstName) ||
+      validators.isEmpty(lastName)
+    ) {
+      onCreateAccountError("Please fill in all fields.");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate email format
+    if (!validators.isValidEmail(email)) {
+      onCreateAccountError("Please enter a valid email address.");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate name format
+    if (!validators.validateName(firstName)) {
+      onCreateAccountError(
+        "First name must be 2-50 characters (letters, spaces, hyphens, apostrophes only).",
+      );
+      setIsLoading(false);
+      return;
+    }
+
+    if (!validators.validateName(lastName)) {
+      onCreateAccountError(
+        "Last name must be 2-50 characters (letters, spaces, hyphens, apostrophes only).",
+      );
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate passwords match
+    if (!validators.validatePasswordsMatch(password, confirmPassword)) {
+      onCreateAccountError("Passwords do not match.");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate password strength
+    if (!validators.isStrongPassword(password)) {
+      onCreateAccountError(
+        "Password must be at least 12 characters and include uppercase, lowercase, numbers, and special characters.",
+      );
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      // --- HERE IS WHERE YOUR SUPABASE LOGIC GOES ---
-      // For now, let's pretend it takes 2 seconds
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      logger.info("Account creation attempt", { email });
+      await authService.signUp({
+        email,
+        password,
+        firstName,
+        lastName,
+      });
 
-      const isSuccess = true; // Pretend Supabase said YES
+      logger.info("Account created successfully", { email });
+      onCreateAccountSuccess(
+        "Account created successfully! Redirecting to Login...",
+      );
 
-      if (isSuccess) {
-        // 2. CALL THE "WALKIE-TALKIE"
-        // This tells the Home page: "Hey, show the success toaster!"
-        onCreateAccountSuccess("Account created successfully!");
-      } else {
-        throw new Error("Invalid credentials");
-      }
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+      setFirstName("");
+      setLastName("");
+
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
     } catch (err) {
       setError(true);
-      // This tells the Home page: "Hey, show the error toaster!"
-      onCreateAccountError(
-        err.message || "Something went wrong. Please try again.",
-      );
+      const publicMessage = getPublicErrorMessage(err);
+      logger.warn("Account creation failed", { email, error: err.message });
+      onCreateAccountError(publicMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleLogin} className="flex flex-col gap-4">
+    <form onSubmit={handleCreateAccount} className="flex flex-col gap-4">
       <div className="flex flex-col gap-3">
         <div className="flex flex-col sm:flex-row gap-3">
           {/* first name */}
@@ -94,6 +163,9 @@ export default function CreateAccountForm({
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        {/* Password strength meter */}
+        {password && <PasswordStrengthMeter password={password} />}
+
         {/* confirm password */}
         <CreateAccountInputField
           label="Confirm Password"

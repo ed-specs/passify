@@ -2,10 +2,24 @@
 
 import Sidebar from "@/components/Navigation/Sidebar";
 import Header from "@/components/header/Header";
+import ToasterMessage from "@/components/toaster/ToasterMessage";
 import { useState } from "react";
 
 export default function DashboardPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showToaster, setShowToaster] = useState(false);
+  const [toasterData, setToasterData] = useState({
+    type: "success",
+    message: "Success!",
+  });
+
+  const displayToaster = (type, message) => {
+    setToasterData({ type, message });
+    setShowToaster(true);
+    setTimeout(() => {
+      setShowToaster(false);
+    }, 5000);
+  };
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -22,6 +36,9 @@ export default function DashboardPage() {
         </div>
       </div>
       <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      {showToaster && (
+        <ToasterMessage type={toasterData.type} message={toasterData.message} />
+      )}
     </div>
   );
 }

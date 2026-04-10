@@ -3,7 +3,7 @@
 import { useState } from "react";
 import CreateAccountInputField from "../../input-fields/auth-input-fields/CreateAccountInputField";
 import CreateAccountButton from "../../buttons/auth-buttons/CreateAccountButton";
-import PasswordStrengthMeter from "../../PasswordStrengthMeter";
+import PasswordStrengthMeter from "../../password/PasswordStrengthMeter";
 import { authService } from "@/services/authService";
 import { validators } from "@/lib/validators";
 import { getPublicErrorMessage } from "@/lib/errorMessages";

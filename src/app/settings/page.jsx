@@ -1,11 +1,12 @@
 "use client";
 
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Sidebar from "@/components/Navigation/Sidebar";
 import Header from "@/components/header/Header";
 import ToasterMessage from "@/components/toaster/ToasterMessage";
 import { useState } from "react";
 
-export default function SettingsPage() {
+function SettingsContent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showToaster, setShowToaster] = useState(false);
   const [toasterData, setToasterData] = useState({
@@ -40,5 +41,13 @@ export default function SettingsPage() {
         <ToasterMessage type={toasterData.type} message={toasterData.message} />
       )}
     </div>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <ProtectedRoute>
+      <SettingsContent />
+    </ProtectedRoute>
   );
 }

@@ -40,11 +40,21 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }) {
   const handleLogout = async () => {
     try {
       await authService.logout();
-      displayToaster("success", "Logging out...");
+      displayToaster("success", "Logged out successfully!");
+
+      // Clear any client-side cached data
+      if (typeof window !== "undefined") {
+        sessionStorage.clear();
+      }
+
+      // Wait a bit for cookies to be cleared, then navigate
       setTimeout(() => {
         router.push("/");
-        router.refresh();
-      }, 2000);
+        // Use window.location for a hard refresh to clear all cached state
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 500);
+      }, 1500);
     } catch (error) {
       displayToaster("error", error?.message || "Logout failed");
     }
